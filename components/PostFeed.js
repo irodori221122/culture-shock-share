@@ -1,7 +1,7 @@
 import EmptyState from "@/components/EmptyState";
 import FeedError from "@/components/FeedError";
 import PostList from "@/components/PostList";
-import { getMyProfile } from "@/lib/auth";
+import { getCurrentUser, getMyProfile } from "@/lib/auth";
 import { fetchPosts } from "@/lib/posts";
 
 // 投稿一覧の「データを取ってくる係」（Server Component）。
@@ -25,6 +25,7 @@ export default async function PostFeed({ country, sort }) {
       initialHasMore={result.hasMore}
       country={country}
       sort={sort}
+      isLoggedIn={Boolean(await getCurrentUser())}
     />
   );
 }

@@ -7,7 +7,7 @@ import { loadMorePosts } from "@/lib/actions/posts";
 
 // 投稿カードの一覧と「もっと見る」ボタン。
 // 最初の 20 件はサーバーで取得済みのものを受け取り、続きはボタンで追加していく。
-export default function PostList({ initialPosts, initialHasMore, country, sort }) {
+export default function PostList({ initialPosts, initialHasMore, country, sort, isLoggedIn }) {
   const [posts, setPosts] = useState(initialPosts);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [error, setError] = useState("");
@@ -52,7 +52,7 @@ export default function PostList({ initialPosts, initialHasMore, country, sort }
       <ul className="flex flex-col gap-4">
         {posts.map((post) => (
           <li key={post.id}>
-            <PostCard post={post} />
+            <PostCard post={post} isLoggedIn={isLoggedIn} />
           </li>
         ))}
       </ul>
