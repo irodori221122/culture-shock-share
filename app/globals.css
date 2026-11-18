@@ -1,26 +1,62 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * アプリ全体の色・角丸・フォントをここで「テーマ」として定義する。
+ * @theme に書いた変数は Tailwind のクラスとして使える
+ * （例: --color-accent → bg-accent / text-accent / border-accent）。
+ * 色をコンポーネントに直書きせず、ここを変えれば全体が変わるようにするため。
+ */
+@theme {
+  /* 背景・面 */
+  --color-background: #faf9f6; /* あたたかみのあるオフホワイト */
+  --color-surface: #ffffff; /* カードの白 */
+  --color-border: #ebe8e1; /* 1px の薄い区切り線 */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* 文字（コントラスト比はいずれも背景に対して 4.5:1 以上） */
+  --color-ink: #1f2430; /* 墨色の本文 */
+  --color-muted: #5e6472; /* 補助テキスト */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* アクセント（主要ボタン・フォーカス用の 1 色）。
+     白文字だとコントラストが足りないので、ボタンの文字は墨色にする */
+  --color-accent: #ff6b4a;
+  --color-accent-hover: #f25a38;
+  --color-accent-soft: #ffece6;
+  --color-accent-ink: #b83a1f; /* 淡い背景の上に載せるアクセント文字 */
+
+  /* 共感（ミント系） */
+  --color-mint-soft: #e4f5ec;
+  --color-mint-strong: #c9ebd9;
+  --color-mint-ink: #1a6a4a;
+
+  /* 発見（やわらかい黄色系） */
+  --color-sun-soft: #fff5d1;
+  --color-sun-strong: #fce7a0;
+  --color-sun-ink: #7a5600;
+
+  /* フォームのエラー（赤すぎない色） */
+  --color-danger: #b5473a;
+
+  /* 角丸 */
+  --radius-card: 18px;
+
+  /* フォント。変数の中身は app/layout.js の next/font が用意する */
+  --font-sans: var(--font-noto-sans-jp), "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-display: var(--font-zen-maru), var(--font-noto-sans-jp), sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-ink);
+}
+
+/* 動きを減らす設定の人には、アニメーションをほぼ無効にする */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
