@@ -15,6 +15,8 @@
 
 コメント・DM はあえて作らず、「読む」と「リアクション」に絞っています。
 
+**公開中の URL**: https://culture-shock-share-qjmf.vercel.app
+
 ## 技術スタック
 
 | 役割 | 使っているもの |
