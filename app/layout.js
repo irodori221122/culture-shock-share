@@ -1,4 +1,6 @@
 import { Zen_Maru_Gothic, Noto_Sans_JP } from "next/font/google";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import "./globals.css";
 
 // 見出し・ロゴ用の丸ゴシック。
@@ -30,7 +32,11 @@ export default function RootLayout({ children }) {
       lang="ja"
       className={`${zenMaru.variable} ${notoSansJp.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
