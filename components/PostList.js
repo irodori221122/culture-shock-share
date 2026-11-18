@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { LoaderCircle } from "lucide-react";
 import PostCard from "@/components/PostCard";
+import Toast from "@/components/Toast";
 import { loadMorePosts } from "@/lib/actions/posts";
 
 // 投稿カードの一覧と「もっと見る」ボタン。
@@ -12,6 +13,16 @@ export default function PostList({ initialPosts, initialHasMore, country, sort, 
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [toast, setToast] = useState("");
+  const closeToast = useCallback(() => setToast(""), []);
+  // 自分で削除した・通報で非表示にした投稿の ID。
+  // 再取得したデータに古い分が混ざっても、もう一度表示しないために覚えておく。
+  const [removedIds, setRemovedIds] = useState(() => new Set());
+
+  function handleRemoved(postId, message) {
+    setRemovedIds((current) => new Set(current).add(postId));
+    setToast(message);
+  }
 
   // 投稿などのあと、サーバーから「最新の 1 ページ目」が届き直すことがある。
   // そのまま置き換えると「もっと見る」で読んだ分が消えるので、
@@ -30,7 +41,9 @@ export default function PostList({ initialPosts, initialHasMore, country, sort, 
     startTransition(async () => {
       let result;
       try {
-        result = await loadMorePosts({ country, sort, offset: posts.length });
+        // 削除・非表示で消えた投稿はサーバー側でも数えられないので、残っている件数から続きを取る
+        const visibleCount = posts.filter((post) => !removedIds.has(post.id)).length;
+        result = await loadMorePosts({ country, sort, offset: visibleCount });
       } catch {
         result = { error: "通信に失敗しました。もう一度お試しください。" };
       }
@@ -50,11 +63,17 @@ export default function PostList({ initialPosts, initialHasMore, country, sort, 
   return (
     <div>
       <ul className="flex flex-col gap-4">
-        {posts.map((post) => (
-          <li key={post.id}>
-            <PostCard post={post} isLoggedIn={isLoggedIn} />
-          </li>
-        ))}
+        {posts
+          .filter((post) => !removedIds.has(post.id))
+          .map((post) => (
+            <li key={post.id}>
+              <PostCard
+                post={post}
+                isLoggedIn={isLoggedIn}
+                onRemoved={(message) => handleRemoved(post.id, message)}
+              />
+            </li>
+          ))}
       </ul>
 
       {error && (
@@ -62,6 +81,8 @@ export default function PostList({ initialPosts, initialHasMore, country, sort, 
           {error}
         </p>
       )}
+
+      <Toast message={toast} onClose={closeToast} />
 
       {hasMore && (
         <div className="mt-8 flex justify-center">
