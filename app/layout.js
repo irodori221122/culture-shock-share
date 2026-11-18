@@ -1,6 +1,7 @@
 import { Zen_Maru_Gothic, Noto_Sans_JP } from "next/font/google";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import NewPostButton from "@/components/NewPostButton";
 import "./globals.css";
 
 // 見出し・ロゴ用の丸ゴシック。
@@ -36,6 +37,8 @@ export default function RootLayout({ children }) {
         <Header />
         {children}
         <Footer />
+        {/* スマホ用: 画面右下に浮かぶ「投稿する」ボタン（PC では隠れる） */}
+        <NewPostButton variant="fab" />
       </body>
     </html>
   );

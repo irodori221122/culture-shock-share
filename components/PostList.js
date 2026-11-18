@@ -13,10 +13,27 @@ export default function PostList({ initialPosts, initialHasMore, country, sort }
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
 
+  // 投稿などのあと、サーバーから「最新の 1 ページ目」が届き直すことがある。
+  // そのまま置き換えると「もっと見る」で読んだ分が消えるので、
+  // 最新の 1 ページ目 ＋ それ以外に読み込み済みの投稿、の順に合体させる。
+  // （前回届いた値と比べて、変わったときだけ合体する。React 公式の書き方）
+  const [prevInitialPosts, setPrevInitialPosts] = useState(initialPosts);
+  if (initialPosts !== prevInitialPosts) {
+    setPrevInitialPosts(initialPosts);
+    const freshIds = new Set(initialPosts.map((post) => post.id));
+    const extras = posts.filter((post) => !freshIds.has(post.id));
+    setPosts([...initialPosts, ...extras]);
+  }
+
   function handleLoadMore() {
     setError("");
     startTransition(async () => {
-      const result = await loadMorePosts({ country, sort, offset: posts.length });
+      let result;
+      try {
+        result = await loadMorePosts({ country, sort, offset: posts.length });
+      } catch {
+        result = { error: "通信に失敗しました。もう一度お試しください。" };
+      }
       if (result.error) {
         setError(result.error);
         return;
