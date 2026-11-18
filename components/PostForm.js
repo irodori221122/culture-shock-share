@@ -1,17 +1,22 @@
 "use client";
 
 import { useId, useState, useTransition } from "react";
-import { CloudRain, LoaderCircle, Sun } from "lucide-react";
+import { CloudRain, GraduationCap, LoaderCircle, Sun } from "lucide-react";
+import FormField, { inputClass } from "@/components/FormField";
 import { createPost } from "@/lib/actions/posts";
-import { COUNTRIES, CONTENT_MAX_LENGTH, GENRES } from "@/lib/constants";
+import { COUNTRIES, CONTENT_MAX_LENGTH, GENRES, getCountryLabel } from "@/lib/constants";
 import { countChars, validatePostInput } from "@/lib/validation";
 
 const EMPTY_FORM = { country: "", genre: "", tag: "", content: "" };
 
 // 投稿フォーム（モーダルの中身）。
 // 入力内容は state で持つので、送信に失敗しても消えない。
-export default function PostForm({ onSuccess }) {
+// profile: ログイン中なら自分の留学先・期間、未ログインなら null
+export default function PostForm({ profile, onSuccess }) {
+  const isLoggedIn = Boolean(profile);
   const [form, setForm] = useState(EMPTY_FORM);
+  // 留学バッジを付けるか（ログイン時のみ表示。最初はオン）
+  const [withBadge, setWithBadge] = useState(true);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -23,6 +28,7 @@ export default function PostForm({ onSuccess }) {
     genre: `${idPrefix}-genre`,
     content: `${idPrefix}-content`,
     count: `${idPrefix}-content-count`,
+    badge: `${idPrefix}-badge`,
   };
 
   const length = countChars(form.content.trim());
@@ -48,7 +54,7 @@ export default function PostForm({ onSuccess }) {
     startTransition(async () => {
       let result;
       try {
-        result = await createPost(form);
+        result = await createPost({ ...form, withBadge });
       } catch {
         // 通信が切れたときなど。入力内容はそのまま残る
         setFormError("通信に失敗しました。接続を確認して、もう一度お試しください。");
@@ -68,7 +74,7 @@ export default function PostForm({ onSuccess }) {
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
       {/* 国・地域 */}
-      <Field label="国・地域" htmlFor={ids.country} error={fieldErrors.country}>
+      <FormField label="国・地域" htmlFor={ids.country} error={fieldErrors.country}>
         <select
           id={ids.country}
           data-autofocus
@@ -85,10 +91,10 @@ export default function PostForm({ onSuccess }) {
             </option>
           ))}
         </select>
-      </Field>
+      </FormField>
 
       {/* ジャンル */}
-      <Field label="ジャンル" htmlFor={ids.genre} error={fieldErrors.genre}>
+      <FormField label="ジャンル" htmlFor={ids.genre} error={fieldErrors.genre}>
         <select
           id={ids.genre}
           value={form.genre}
@@ -104,10 +110,10 @@ export default function PostForm({ onSuccess }) {
             </option>
           ))}
         </select>
-      </Field>
+      </FormField>
 
       {/* 内容 */}
-      <Field label="内容" htmlFor={ids.content} error={fieldErrors.content}>
+      <FormField label="内容" htmlFor={ids.content} error={fieldErrors.content}>
         <textarea
           id={ids.content}
           rows={6}
@@ -124,7 +130,7 @@ export default function PostForm({ onSuccess }) {
         >
           {length} / {CONTENT_MAX_LENGTH}
         </p>
-      </Field>
+      </FormField>
 
       {/* タグ（ラジオボタン 2 択） */}
       <fieldset>
@@ -154,8 +160,33 @@ export default function PostForm({ onSuccess }) {
         )}
       </fieldset>
 
+      {/* 留学バッジ（ログイン時だけ） */}
+      {isLoggedIn && (
+        <label
+          htmlFor={ids.badge}
+          className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-border px-4 py-2.5 text-sm"
+        >
+          <input
+            id={ids.badge}
+            type="checkbox"
+            checked={withBadge}
+            onChange={(e) => setWithBadge(e.target.checked)}
+            className="h-4 w-4 accent-accent"
+          />
+          <span>
+            留学バッジを付ける
+            <span className="ml-1 inline-flex items-center gap-1 text-xs text-muted">
+              <GraduationCap aria-hidden="true" className="h-3.5 w-3.5" />
+              {getCountryLabel(profile.study_country)}留学{profile.study_months}ヶ月
+            </span>
+          </span>
+        </label>
+      )}
+
       <p className="rounded-xl bg-background px-4 py-3 text-xs leading-relaxed text-muted">
-        名前は表示されません。ログインせずに投稿した場合、あとから削除することはできません。
+        {isLoggedIn
+          ? "名前は表示されません。自分の投稿は、あとから削除できます。"
+          : "名前は表示されません。ログインせずに投稿した場合、あとから削除することはできません。"}
       </p>
 
       {formError && (
@@ -173,23 +204,6 @@ export default function PostForm({ onSuccess }) {
         {isPending ? "送信中…" : "投稿する"}
       </button>
     </form>
-  );
-}
-
-// ラベル（上）・入力欄・エラー文（下）のセット
-function Field({ label, htmlFor, error, children }) {
-  return (
-    <div>
-      <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-medium">
-        {label}
-      </label>
-      {children}
-      {error && (
-        <p id={`${htmlFor}-error`} className="mt-1.5 text-sm text-danger">
-          {error}
-        </p>
-      )}
-    </div>
   );
 }
 
@@ -213,10 +227,4 @@ function TagOption({ name, value, label, Icon, checked, onChange, activeClass })
       {label}
     </label>
   );
-}
-
-function inputClass(error) {
-  return `w-full rounded-xl border bg-surface px-4 py-2.5 min-h-11 ${
-    error ? "border-danger" : "border-border"
-  }`;
 }

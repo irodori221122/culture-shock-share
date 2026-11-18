@@ -1,6 +1,7 @@
 import EmptyState from "@/components/EmptyState";
 import FeedError from "@/components/FeedError";
 import PostList from "@/components/PostList";
+import { getMyProfile } from "@/lib/auth";
 import { fetchPosts } from "@/lib/posts";
 
 // 投稿一覧の「データを取ってくる係」（Server Component）。
@@ -15,7 +16,7 @@ export default async function PostFeed({ country, sort }) {
   }
 
   if (result.posts.length === 0) {
-    return <EmptyState />;
+    return <EmptyState profile={await getMyProfile()} />;
   }
 
   return (

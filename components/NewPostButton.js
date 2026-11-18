@@ -20,7 +20,8 @@ const VARIANT_CLASS = {
 };
 
 // 「投稿する」ボタン。押すと投稿モーダルが開き、成功したらトーストを出す。
-export default function NewPostButton({ variant = "header" }) {
+// profile: ログイン中なら自分の留学先・期間（バッジの表示に使う）、未ログインなら null
+export default function NewPostButton({ variant = "header", profile = null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [toast, setToast] = useState("");
 
@@ -41,6 +42,7 @@ export default function NewPostButton({ variant = "header" }) {
       <Modal open={isOpen} onClose={() => setIsOpen(false)} title="カルチャーショックを投稿">
         {/* 閉じてもフォームは残すので、うっかり閉じても書きかけの内容は消えない */}
         <PostForm
+          profile={profile}
           onSuccess={() => {
             setIsOpen(false);
             setToast("投稿しました");

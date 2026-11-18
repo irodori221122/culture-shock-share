@@ -2,6 +2,7 @@ import { Zen_Maru_Gothic, Noto_Sans_JP } from "next/font/google";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import NewPostButton from "@/components/NewPostButton";
+import { getMyProfile } from "@/lib/auth";
 import "./globals.css";
 
 // 見出し・ロゴ用の丸ゴシック。
@@ -22,12 +23,19 @@ const notoSansJp = Noto_Sans_JP({
 });
 
 export const metadata = {
-  title: "Culture Shock Share",
+  // 各ページの title は「ログイン | Culture Shock Share」の形になる
+  title: {
+    default: "Culture Shock Share",
+    template: "%s | Culture Shock Share",
+  },
   description:
     "留学先で体験したカルチャーショックを、匿名で気軽に共有できる場所。",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // ログイン中なら自分の留学先・期間（投稿フォームのバッジ表示に使う）
+  const profile = await getMyProfile();
+
   return (
     <html
       lang="ja"
@@ -38,7 +46,7 @@ export default function RootLayout({ children }) {
         {children}
         <Footer />
         {/* スマホ用: 画面右下に浮かぶ「投稿する」ボタン（PC では隠れる） */}
-        <NewPostButton variant="fab" />
+        <NewPostButton variant="fab" profile={profile} />
       </body>
     </html>
   );
