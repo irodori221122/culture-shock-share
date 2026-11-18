@@ -5,7 +5,7 @@ export default function PostListSkeleton() {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="animate-pulse rounded-card border border-border bg-surface p-5 sm:p-6"
+          className="animate-pulse rounded-card border border-border bg-surface p-4 sm:p-6"
         >
           <div className="flex gap-2">
             <div className="h-5 w-24 rounded-full bg-border" />

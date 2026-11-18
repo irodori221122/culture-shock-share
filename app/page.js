@@ -5,6 +5,12 @@ import PostFeed from "@/components/PostFeed";
 import PostListSkeleton from "@/components/PostListSkeleton";
 import { normalizeFeedParams } from "@/lib/posts";
 
+export const metadata = {
+  // title を書かないと layout.js の title.default（Culture Shock Share）が使われる
+  description:
+    "留学生が体験したカルチャーショックの一覧。国やリアクションの多さで絞り込み・並び替えができます。",
+};
+
 // トップページ（投稿一覧）。URL の ?country= と ?sort= で表示を切り替える。
 export default async function Home({ searchParams }) {
   const { country, sort } = normalizeFeedParams(await searchParams);

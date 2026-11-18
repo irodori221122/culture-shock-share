@@ -89,6 +89,12 @@ body {
   color: var(--color-ink);
 }
 
+/* 入力欄のプレースホルダー（薄すぎると読めないので補助テキストと同じ色にする） */
+::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
 /* キーボード操作のときに、いまどこにいるかがはっきり見えるようにする */
 :focus-visible {
   outline: 2px solid var(--color-accent);

@@ -13,7 +13,7 @@ export default function PostCard({ post, isLoggedIn, onRemoved }) {
   const TagIcon = isPositive ? Sun : CloudRain;
 
   return (
-    <article className="animate-fade-in rounded-card border border-border bg-surface p-5 sm:p-6">
+    <article className="animate-fade-in rounded-card border border-border bg-surface p-4 sm:p-6">
       {/* 上段 */}
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <span className="mr-1 inline-flex items-center gap-1.5 font-medium">
@@ -47,7 +47,7 @@ export default function PostCard({ post, isLoggedIn, onRemoved }) {
         {post.content}
       </p>
 
-      {/* 下段 */}
+      {/* 下段: スマホでは「日時・バッジ・⋯」と「リアクション」の 2 行、PC では 1 行に並べる */}
       <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted">
         <RelativeTime dateTime={post.created_at} />
         {post.author_study_country && post.author_study_months && (
@@ -57,8 +57,7 @@ export default function PostCard({ post, isLoggedIn, onRemoved }) {
             {post.author_study_months}ヶ月
           </span>
         )}
-
-        <div className="ml-auto flex items-center gap-1">
+        <div className="order-last w-full sm:order-none sm:ml-auto sm:w-auto">
           <ReactionButtons
             postId={post.id}
             empathyCount={post.empathy_count}
@@ -66,6 +65,8 @@ export default function PostCard({ post, isLoggedIn, onRemoved }) {
             myReaction={post.my_reaction}
             isLoggedIn={isLoggedIn}
           />
+        </div>
+        <div className="-my-2 ml-auto sm:ml-0">
           <PostMenu
             postId={post.id}
             isMine={post.is_mine}

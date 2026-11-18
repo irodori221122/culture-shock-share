@@ -29,7 +29,18 @@ export const metadata = {
     template: "%s | Culture Shock Share",
   },
   description:
-    "留学先で体験したカルチャーショックを、匿名で気軽に共有できる場所。",
+    "留学先で体験したカルチャーショックを、匿名で気軽に共有できる場所。共感と発見で、異文化への理解を深めよう。",
+  // SNS で共有されたときの表示（OGP）。画像は app/opengraph-image.js が作る
+  openGraph: {
+    title: "Culture Shock Share",
+    description: "留学先で体験したカルチャーショックを、匿名で気軽に共有できる場所。",
+    siteName: "Culture Shock Share",
+    locale: "ja_JP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default async function RootLayout({ children }) {

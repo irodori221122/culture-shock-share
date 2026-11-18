@@ -101,7 +101,7 @@ export default function ReactionButtons({ postId, empathyCount, discoveryCount, 
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-1.5">
       {BUTTONS.map(({ type, label, countKey, Icon, idleClass, activeClass }) => {
         const isActive = optimistic.myReaction === type;
         return (
@@ -110,7 +110,7 @@ export default function ReactionButtons({ postId, empathyCount, discoveryCount, 
             type="button"
             onClick={() => handleClick(type)}
             aria-pressed={isActive}
-            className={`inline-flex min-h-11 items-center gap-1 rounded-full border px-3 text-xs transition-colors ${
+            className={`inline-flex min-h-11 items-center gap-1 whitespace-nowrap rounded-full border px-2.5 text-xs sm:px-3 transition-colors ${
               isActive ? `${activeClass} font-bold` : `${idleClass} hover:brightness-95`
             }`}
           >
